@@ -1,62 +1,57 @@
-let currentQuestionIndex = 0;
-let correctAnswers = 0;
-let allQuestions = [];
-let selectedQuestions = [];
-const NUM_QUESTIONS = 30;
+document.addEventListener('DOMContentLoaded', () => {
+    loadQuestion();
+});
 
-function loadQuestions() {
-  fetch('questions.json')
-    .then(response => response.json())
-    .then(data => {
-      allQuestions = data;
-      selectRandomQuestions();
-      displayQuestion();
-    })
-    .catch(error => console.error('Error loading questions:', error));
+function loadQuestion() {
+    // ここで質問をロードします。実際にはサーバーから取得するか、
+    // あらかじめ定義された質問リストから選択します。
+    const questionText = document.getElementById('question');
+    const choicesList = document.getElementById('choices-list');
+    const submitButton = document.getElementById('submit-btn');
+
+    // 仮の問題データ
+    const currentQuestion = {
+        question: "ここに問題文が表示されます。",
+        choices: ["選択肢1", "選択肢2", "選択肢3", "選択肢4"],
+        answer: "選択肢1"
+    };
+
+    questionText.textContent = currentQuestion.question;
+    choicesList.innerHTML = '';
+
+    currentQuestion.choices.forEach(choice => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.textContent = choice;
+        button.classList.add('choice-btn');
+        button.addEventListener('click', () => selectChoice(button, currentQuestion.answer));
+        li.appendChild(button);
+        choicesList.appendChild(li);
+    });
+
+    submitButton.addEventListener('click', submitAnswer);
 }
 
-function selectRandomQuestions() {
-  const shuffled = allQuestions.sort(() => 0.5 - Math.random());
-  selectedQuestions = shuffled.slice(0, NUM_QUESTIONS);
-  currentQuestionIndex = 0;
-  correctAnswers = 0;
+function selectChoice(button, correctAnswer) {
+    // 選択された選択肢を処理します。
+    const choiceButtons = document.querySelectorAll('.choice-btn');
+    choiceButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === correctAnswer) {
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('wrong');
+        }
+    });
 }
 
-function displayQuestion() {
-  const question = selectedQuestions[currentQuestionIndex];
-  document.getElementById("question").textContent = question.question;
-  const choicesContainer = document.getElementById("choices");
-  choicesContainer.innerHTML = '';
-  question.choices.forEach((choice, index) => {
-    const li = document.createElement("li");
-    const button = document.createElement("button");
-    button.textContent = choice;
-    button.onclick = () => selectAnswer(index);
-    li.appendChild(button);
-    choicesContainer.appendChild(li);
-  });
-  document.getElementById("submit").disabled = false;
-}
-
-function selectAnswer(choiceIndex) {
-  const question = selectedQuestions[currentQuestionIndex];
-  const isCorrect = question.choices[choiceIndex] === question.answer;
-  document.getElementById("feedback").textContent = isCorrect ? "正解！" : "不正解";
-  if (isCorrect) correctAnswers++;
-  document.getElementById("explanation").textContent = question.explanation;
-  document.getElementById("submit").disabled = true;
-}
-
-document.getElementById("submit").onclick = () => {
-  if (currentQuestionIndex < selectedQuestions.length - 1) {
-    currentQuestionIndex++;
-    displayQuestion();
-  } else {
-    showResults();
-  }
-};
-
-function showResults() {
-  const score = document.getElementById("score");
-  const passed = correctAnswers >= selectedQuestions.length * 0.6;
-  score.textContent = `合計正解数: ${correctAnswers} / ${selectedQuestions.length} - ${passed ? "合格" : "不合格"}`;
+function submitAnswer() {
+    // 回答を確認してフィードバックを提供します。
+    const feedbackElement = document.getElementById('feedback');
+    const selectedButton = document.querySelector('.choice-btn.correct');
+    if (selectedButton && selectedButton.disabled) {
+        feedbackElement.textContent = '正解です！';
+        feedbackElement.style.color = 'green';
+    } else {
+        feedbackElement.textContent = '残念、不正解です。';
+        feedbackElement.style

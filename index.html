@@ -2,19 +2,18 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>2級電気工事士模擬試験</title>
+    <title>2級電気工事士クイズアプリ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="quiz-container">
+    <div class="quiz-container">
         <h1>2級電気工事士模擬試験</h1>
-        <div id="question"></div>
-        <ul id="choices"></ul>
-        <button id="submit">回答する</button>
+        <div id="question-container">
+            <p id="question">ここに問題文が表示されます。</p>
+            <ul id="choices-list"></ul>
+        </div>
+        <button id="submit-btn">回答を確認する</button>
         <div id="feedback"></div>
-        <div id="score"></div>
-        <button id="next">次の問題</button>
-        <div id="explanation"></div>
     </div>
     <script src="script.js"></script>
 </body>
